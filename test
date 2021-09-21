@@ -1,0 +1,11 @@
+.a: {
+    .data: #"some data"
+}
+.b: #"sommee data"
+.c: {
+    .g: #"oiu"
+    .d: {
+        .e: #"asd"
+        .f: #"ert"
+    }
+}
