@@ -42,7 +42,7 @@ The type binding means that one element can be replaced with another, but may ha
 ```
 <...>
 ```
-The state type has **any** of its elements present at any given time. Classical computers can effectively work with only one element present at any given time.
+The state type has **any** of its elements present at any given time.
 
 #### Switch type
 ```
@@ -58,6 +58,16 @@ The switch type has **all** of its elements present at any given time. The state
 The series type represents series of actions/relations. It is the only way to create interfaces and functions. 
 
 ---
+#### Element's allocation
+```
+#T // allocated elenemt T
+T  // unallocated elemet T
+*T // postponed allocation of the element T
+
+<#T, nil> = nil >> *T
+nil >> *T // this is allocation function
+```
+
 
 #### Playing with elements
 ```
@@ -67,6 +77,22 @@ The series type represents series of actions/relations. It is the only way to cr
 all = nil...any
 bool = <true, false>
 byte = <0...256>
+
+bool = <>
+    true
+    false
+    
+c = [
+    |a, b, c|
+    |e, f, g|
+]
+c = []
+    || a
+        b
+        c
+    || e
+        f
+        g
 ```
 
 #### Making a product type
@@ -83,21 +109,27 @@ byte = <0...256>
         1: b
         2: c
     }
+    
+    {
+        a
+        b
+        c
+    }
 ```
 Struct example:
 ```
 {
-    key0: value0
-    key1: value1
+    key0: #type0
+    key1: #type1
     ...
-    keyn: valuen
+    keyn: #typen
 }
 ```
 
 Array example:
 ```
 {
-    0...3: type
+    0...3: #type
 }
 ```
 
@@ -122,7 +154,7 @@ b >> struct = bool
 ```
 ```
 array = (
-    0...3: byte
+    0...3: #byte
 )
 0 >> array ~ byte
 1 >> array ~ byte
@@ -153,3 +185,31 @@ Here we create a function variable f_var. The ge function call here is the great
 Any chain type-equal to another if they have the same boundaries.
 
 ---
+#### Linked list and its allocation
+```
+list = {
+    value: #int
+    next: *list
+}
+
+// The nat value here tells the allocation depth of a linked list
+newList ~ |#nat -> *list|
+newList = ||
+    i: #nat
+    l: *list
+
+    loop = (l: *list) nat []
+        || 0
+            nil
+        || all/0
+            nil >> l
+            l >> []
+                || nil
+                || #list
+                    i >> --
+                    next_list: next >> @
+                    (next_list) i >> loop
+
+    (l) i >> loop
+    return: l
+```
