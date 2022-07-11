@@ -187,29 +187,45 @@ Any chain type-equal to another if they have the same boundaries.
 ---
 #### Linked list and its allocation
 ```
-list = {
-    value: #int
-    next: *list
+list is all {
+    link value #int
+    link next *list
 }
 
-// The nat value here tells the allocation depth of a linked list
-newList ~ |#nat -> *list|
-newList = ||
+newList as link #nat *list
+newList is link {
     i: #nat
-    l: *list
+    l: new list
 
-    loop = (l: *list) nat []
-        || 0
-            nil
-        || all/0
-            nil >> l
-            l >> []
-                || nil
-                || #list
-                    i >> --
-                    next_list: next >> @
-                    (next_list) i >> loop
+    loop is link {
+        args: all {
+            link l *list
+            link i #nat
+        }
 
-    (l) i >> loop
+        args >> all {
+            link (_ 0) nil
+            link {
+                args: (*list all/0)
+
+                new_list: new list
+                new_list >> all {
+                    link nil
+                    link {
+                        #list
+
+                        i >> .args >> --
+                        next: next >> l >> .args
+                        .new_list >> .next
+
+                        (.next i) >> loop
+                    }
+                }
+            }
+         }
+    }
+
+    (l i) >> loop
     return: l
+}
 ```
